@@ -4,11 +4,11 @@ const acceleration = 0.1;
 
 function setup() {
   createCanvas(600, 400);
-  background(50, 50, 50);
 }
 
 //draw moon
 function scenery() {
+  background(50, 50, 50);
   fill(110, 110, 110);
   noStroke();
   beginShape();
@@ -112,7 +112,25 @@ function spacecraft(x, y) {
   pop();
 }
 
+let gameIsRunning = true;
 function draw() {
   scenery();
   spacecraft(0, spacecraftY);
+
+  //Adding collision, gravity and opportunity to fly
+  if (gameIsRunning === true) {
+    //gravity
+    spacecraftY = spacecraftY + velocity;
+    velocity = velocity + acceleration;
+
+    //make it fly
+    if (mouseIsPressed) {
+      velocity = velocity - 0.2;
+    }
+    //collision with the moon
+    if (spacecraftY > 70) {
+      gameIsRunning = false;
+      console.log("game over");
+    }
+  }
 }
