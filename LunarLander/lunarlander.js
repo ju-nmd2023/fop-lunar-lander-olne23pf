@@ -1,28 +1,41 @@
-let spacecraftY = 100;
+let spacecraftY = 60;
 let backgroundY = 0;
-let velocity = 1;
-const acceleration = 0.1;
+
+let flightSpeedX = 1;
+let flightSpeedX2 = -2;
+let flightSpeedX3 = -3;
+let flightSpeedY = 0.1;
+
+let spx = 0;
+let spx2 = 0;
+let spx3 = 10;
+let spy = -50;
+let spy3 = -200;
 
 function setup() {
   createCanvas(600, 400);
 }
 function scenery() {
-  background(50, 50, 50);
+  //background(50, 50, 50);
+  fill(50, 50, 50);
+  noStroke();
+  rect(0, 0, 600, 400);
 }
 
 //moving background when game is running
 function background(x, y) {
   push();
   translate(x, y);
+
   //STARTIMAGE-IMG1
   //grass
   fill(50, 130, 50);
   noStroke();
-  rect(0, 350, 600, 100);
+  rect(0, 310, 600, 90);
   //sky
   fill(150, 210, 240);
   noStroke();
-  rect(0, 350, 600, -400);
+  rect(0, 310, 600, -400);
 
   //IMG2
   fill(100, 190, 250);
@@ -32,7 +45,6 @@ function background(x, y) {
   pop();
 }
 
-//draw spacecraft
 function spacecraft(x, y) {
   push();
   translate(x, y);
@@ -119,7 +131,164 @@ function draw() {
 
   if (gameIsRunning === true) {
     //background moving/spacecraft flying
-    backgroundY = backgroundY + 2;
-    velocity = velocity + acceleration;
+    //backgroundY = backgroundY + 2;
+  }
+
+  //Got birds from https://editor.p5js.org/KatalinVarga/sketches/rT-XktCX-
+  bird();
+
+  function bird() {
+    stroke(255);
+    strokeWeight(2.5);
+    noFill();
+    // bird 1
+    bezier(
+      658 + spx,
+      215 + spy,
+      651 + spx,
+      210 + spy,
+      647 + spx,
+      215 + spy,
+      642 + spx,
+      220 + spy
+    );
+    bezier(
+      626 + spx,
+      215 + spy,
+      630 + spx,
+      210 + spy,
+      635 + spx,
+      210 + spy,
+      642 + spx,
+      220 + spy
+    );
+    stroke(165, 165, 141);
+    strokeWeight(0.7);
+    bezier(
+      658 + spx,
+      215 + spy,
+      651 + spx,
+      210 + spy,
+      647 + spx,
+      215 + spy,
+      642 + spx,
+      220 + spy
+    );
+    bezier(
+      626 + spx,
+      215 + spy,
+      630 + spx,
+      210 + spy,
+      635 + spx,
+      210 + spy,
+      642 + spx,
+      220 + spy
+    );
+    //bird 2
+    stroke(255);
+    strokeWeight(2.5);
+    bezier(
+      458 + spx2,
+      315 + spy,
+      451 + spx2,
+      310 + spy,
+      447 + spx2,
+      315 + spy,
+      442 + spx2,
+      320 + spy
+    );
+    bezier(
+      426 + spx2,
+      315 + spy,
+      430 + spx2,
+      310 + spy,
+      435 + spx2,
+      310 + spy,
+      442 + spx2,
+      320 + spy
+    );
+    stroke(165, 165, 141);
+    strokeWeight(0.7);
+    bezier(
+      458 + spx2,
+      315 + spy,
+      451 + spx2,
+      310 + spy,
+      447 + spx2,
+      315 + spy,
+      442 + spx2,
+      320 + spy
+    );
+    bezier(
+      426 + spx2,
+      315 + spy,
+      430 + spx2,
+      310 + spy,
+      435 + spx2,
+      310 + spy,
+      442 + spx2,
+      320 + spy
+    );
+    //bird 3:
+    stroke(255);
+    strokeWeight(2.5);
+    bezier(
+      488 + spx3,
+      315 + spy3,
+      481 + spx3,
+      310 + spy3,
+      477 + spx3,
+      315 + spy3,
+      472 + spx3,
+      320 + spy3
+    );
+    bezier(
+      456 + spx3,
+      315 + spy3,
+      460 + spx3,
+      310 + spy3,
+      465 + spx3,
+      310 + spy3,
+      472 + spx3,
+      320 + spy3
+    );
+    stroke(165, 165, 141);
+    strokeWeight(0.7);
+    bezier(
+      488 + spx3,
+      315 + spy3,
+      481 + spx3,
+      310 + spy3,
+      477 + spx3,
+      315 + spy3,
+      472 + spx3,
+      320 + spy3
+    );
+    bezier(
+      456 + spx3,
+      315 + spy3,
+      460 + spx3,
+      310 + spy3,
+      465 + spx3,
+      310 + spy3,
+      472 + spx3,
+      320 + spy3
+    );
+    spx += flightSpeedX;
+    spx2 += flightSpeedX2;
+    spx3 += flightSpeedX3;
+    spy -= flightSpeedY;
+    if (spx < -100 || spx > 180) {
+      flightSpeedX *= -1;
+    }
+    if (spx2 < -100 || spx2 > 180) {
+      flightSpeedX2 *= -1;
+    }
+    if (spx3 < -100 || spx3 > 180) {
+      flightSpeedX3 *= -1;
+    }
+    if (spy < -150 || spy > 0) {
+      flightSpeedY *= -1;
+    }
   }
 }
