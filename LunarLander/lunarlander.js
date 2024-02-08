@@ -1,43 +1,42 @@
-let spacecraftY = -100;
+let spacecraftY = 100;
+let backgroundY = 0;
 let velocity = 1;
 const acceleration = 0.1;
 
 function setup() {
   createCanvas(600, 400);
 }
-
-//draw moon
 function scenery() {
   background(50, 50, 50);
-  fill(110, 110, 110);
-  noStroke();
-  beginShape();
-  vertex(0, 350);
-  bezierVertex(0, 350, 300, 280, 600, 350);
-  rect(0, 350, 600, 50);
-  endShape();
-  //moon details
-  fill(80, 80, 80);
-  noStroke();
-  ellipse(84, 372.5, 59, 22);
-  ellipse(173, 342, 42, 16);
-  ellipse(367, 383, 93, 23);
-  ellipse(456, 342, 67, 19);
-  ellipse(544, 377, 54, 19);
+}
 
-  fill(120, 120, 120);
+//moving background when game is running
+function background(x, y) {
+  push();
+  translate(x, y);
+  //STARTIMAGE-IMG1
+  //grass
+  fill(50, 130, 50);
   noStroke();
-  ellipse(80, 370, 50, 18);
-  ellipse(170, 340, 40, 12);
-  ellipse(360, 380, 80, 20);
-  ellipse(450, 340, 60, 15);
-  ellipse(540, 375, 50, 15);
+  rect(0, 350, 600, 100);
+  //sky
+  fill(150, 210, 240);
+  noStroke();
+  rect(0, 350, 600, -400);
+
+  //IMG2
+  fill(100, 190, 250);
+  noStroke();
+  rect(0, 0, 600, -400);
+
+  pop();
 }
 
 //draw spacecraft
 function spacecraft(x, y) {
   push();
   translate(x, y);
+  noStroke();
   //base
   fill(170, 170, 170);
   beginShape();
@@ -85,7 +84,7 @@ function spacecraft(x, y) {
   fill(110, 110, 110);
   ellipse(300, 210, 40, 40);
   //widnow - glass
-  fill(255, 255, 255, 170);
+  fill(200, 240, 255, 170);
   ellipse(300, 210, 30, 30);
   //screws
   fill(180, 180, 180);
@@ -115,22 +114,12 @@ function spacecraft(x, y) {
 let gameIsRunning = true;
 function draw() {
   scenery();
+  background(0, backgroundY);
   spacecraft(0, spacecraftY);
 
-  //Adding collision, gravity and opportunity to fly
   if (gameIsRunning === true) {
-    //gravity
-    spacecraftY = spacecraftY + velocity;
+    //background moving/spacecraft flying
+    backgroundY = backgroundY + 2;
     velocity = velocity + acceleration;
-
-    //make it fly
-    if (mouseIsPressed) {
-      velocity = velocity - 0.2;
-    }
-    //collision with the moon
-    if (spacecraftY > 70) {
-      gameIsRunning = false;
-      console.log("game over");
-    }
   }
 }
