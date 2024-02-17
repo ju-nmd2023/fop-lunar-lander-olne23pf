@@ -1,18 +1,20 @@
+let backgroundY = 0;
+
 let spacecraftY = 60;
 let spacecraftX = 0;
-let move = 5;
 let x = 2000;
+let move = 5;
 
-let backgroundY = 0;
 let asteroidsY = 0;
+let asteroidsX = 0;
+let asteroidsMinusX = 600;
+
 let birdY = 0;
 let flightSpeedX = 1;
 let flightSpeedX2 = -2;
 let flightSpeedX3 = -3;
 let flightSpeedX4 = -1.5;
-
 let flightSpeedY = 0.1;
-
 let spx = 0;
 let spx2 = 0;
 let spx3 = 30;
@@ -23,6 +25,7 @@ let spy3 = -200;
 function setup() {
   createCanvas(600, 400);
 }
+
 function scenery() {
   //background(50, 50, 50);
   fill(50, 50, 50);
@@ -140,18 +143,39 @@ function draw() {
   background(0, backgroundY);
   spacecraft(spacecraftX, spacecraftY);
   bird(0, birdY);
-  asteroids(0, asteroidsY);
+  asteroids(asteroidsMinusX + 100, asteroidsY);
+  asteroids(asteroidsMinusX, asteroidsY);
+  asteroids(asteroidsX + 100, asteroidsY);
+  asteroids(asteroidsX, asteroidsY);
 
   if (gameIsRunning === true) {
     //background moving/spacecraft flying
-    backgroundY = backgroundY + 2;
-    birdY = birdY + 1;
-    asteroidsY = asteroidsY + 1.2;
+
+    //backgroundY = backgroundY + 2;
+    //birdY = birdY + 1;
+    asteroidsY = asteroidsY + 2;
+    asteroidsX = asteroidsX + 1.4;
+    asteroidsMinusX = asteroidsMinusX - 2;
+    if (asteroidsX > 700) {
+      asteroidsX = 0;
+    }
+    if (asteroidsMinusX < -100) {
+      asteroidsMinusX = 600;
+    }
+    if (asteroidsY > 400) {
+      asteroidsY = 0;
+    }
     //moving the spacecraft sideways
     if (keyCode == LEFT_ARROW && keyIsPressed) {
       spacecraftX = spacecraftX - move;
     } else if (keyCode == RIGHT_ARROW && keyIsPressed) {
       spacecraftX = spacecraftX + move;
+    }
+    //spin the spacecraft
+    if ((backgroundY = -1000)) {
+      if (keyCode == BOTTOM_ARROW && keyIsPressed) {
+        spacecraftZ = spacecraftZ + turn;
+      }
     }
     //add walls on the sides of the canvas so the spacecraft cant move outside it
     if (spacecraftX < -260) {
@@ -159,6 +183,28 @@ function draw() {
     }
     if (spacecraftX > 260) {
       spacecraftX = spacecraftX - move;
+    }
+
+    //obstacles
+    spx += flightSpeedX;
+    spx2 += flightSpeedX2;
+    spx3 += flightSpeedX3;
+    spx4 += flightSpeedX4;
+    spy -= flightSpeedY;
+    if (spx < -100 || spx > 280) {
+      flightSpeedX *= 1;
+    }
+    if (spx2 < -100 || spx2 > 280) {
+      flightSpeedX2 *= -1;
+    }
+    if (spx3 < -100 || spx3 > 280) {
+      flightSpeedX3 *= -1;
+    }
+    if (spx4 < -100 || spx4 > 280) {
+      flightSpeedX4 *= -1;
+    }
+    if (spy < -150 || spy > 0) {
+      flightSpeedY *= -1;
     }
   }
 
@@ -285,33 +331,26 @@ function draw() {
       72 + spx,
       120 + spy3
     );
-
-    spx += flightSpeedX;
-    spx2 += flightSpeedX2;
-    spx3 += flightSpeedX3;
-    spx4 += flightSpeedX4;
-    spy -= flightSpeedY;
-    if (spx < -100 || spx > 280) {
-      flightSpeedX *= -1;
-    }
-    if (spx2 < -100 || spx2 > 280) {
-      flightSpeedX2 *= -1;
-    }
-    if (spx3 < -100 || spx3 > 280) {
-      flightSpeedX3 *= -1;
-    }
-    if (spx4 < -100 || spx4 > 280) {
-      flightSpeedX4 *= -1;
-    }
-    if (spy < -150 || spy > 0) {
-      flightSpeedY *= -1;
-    }
   }
   function asteroids(x, y) {
-    translate(x, y);
     push();
-    fill(grey);
-    ellipse(200, 100, 40, 40);
+    translate(x, y);
+    beginShape();
+    vertex(70, 50);
+    fill(100, 100, 100);
+    noStroke();
+    bezierVertex(70, 50, 90, 70, 70, 80);
+    bezierVertex(70, 80, 55, 85, 50, 80);
+    bezierVertex(50, 80, 30, 80, 30, 70);
+    bezierVertex(30, 70, 25, 50, 50, 50);
+    bezierVertex(50, 50, 60, 40, 70, 50);
+    endShape();
+    fill(120, 120, 120);
+    ellipse(65, 60, 8, 10);
+    ellipse(40, 70, 8, 5);
+    ellipse(50, 63, 6, 6);
+    ellipse(60, 75, 12, 6);
+    ellipse(39, 56, 7, 4);
     pop();
   }
 }
