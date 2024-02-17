@@ -1,14 +1,22 @@
 let spacecraftY = 60;
-let backgroundY = 0;
+let spacecraftX = 0;
+let move = 5;
+let x = 2000;
 
+let backgroundY = 0;
+let asteroidsY = 0;
+let birdY = 0;
 let flightSpeedX = 1;
 let flightSpeedX2 = -2;
 let flightSpeedX3 = -3;
+let flightSpeedX4 = -1.5;
+
 let flightSpeedY = 0.1;
 
 let spx = 0;
 let spx2 = 0;
-let spx3 = 10;
+let spx3 = 30;
+let spx4 = 20;
 let spy = -50;
 let spy3 = -200;
 
@@ -36,11 +44,14 @@ function background(x, y) {
   fill(150, 210, 240);
   noStroke();
   rect(0, 310, 600, -400);
-
-  //IMG2
+  //IMG2-sky
   fill(100, 190, 250);
   noStroke();
   rect(0, 0, 600, -400);
+  //IMG3-sky
+  fill(90, 180, 250);
+  noStroke();
+  rect(0, -400, 600, -400);
 
   pop();
 }
@@ -127,168 +138,180 @@ let gameIsRunning = true;
 function draw() {
   scenery();
   background(0, backgroundY);
-  spacecraft(0, spacecraftY);
+  spacecraft(spacecraftX, spacecraftY);
+  bird(0, birdY);
+  asteroids(0, asteroidsY);
 
   if (gameIsRunning === true) {
     //background moving/spacecraft flying
-    //backgroundY = backgroundY + 2;
+    backgroundY = backgroundY + 2;
+    birdY = birdY + 1;
+    asteroidsY = asteroidsY + 1.2;
+    //moving the spacecraft sideways
+    if (keyCode == LEFT_ARROW && keyIsPressed) {
+      spacecraftX = spacecraftX - move;
+    } else if (keyCode == RIGHT_ARROW && keyIsPressed) {
+      spacecraftX = spacecraftX + move;
+    }
+    //add walls on the sides of the canvas so the spacecraft cant move outside it
+    if (spacecraftX < -260) {
+      spacecraftX = spacecraftX + move;
+    }
+    if (spacecraftX > 260) {
+      spacecraftX = spacecraftX - move;
+    }
   }
 
   //Got birds from https://editor.p5js.org/KatalinVarga/sketches/rT-XktCX-
-  bird();
 
-  function bird() {
-    stroke(255);
+  function bird(x, y) {
+    translate(x, y);
+    stroke(1);
     strokeWeight(2.5);
     noFill();
     // bird 1
     bezier(
-      658 + spx,
+      258 + spx,
       215 + spy,
-      651 + spx,
+      251 + spx,
       210 + spy,
-      647 + spx,
+      247 + spx,
       215 + spy,
-      642 + spx,
+      242 + spx,
       220 + spy
     );
     bezier(
-      626 + spx,
+      226 + spx,
       215 + spy,
-      630 + spx,
+      230 + spx,
       210 + spy,
-      635 + spx,
+      235 + spx,
       210 + spy,
-      642 + spx,
+      242 + spx,
       220 + spy
     );
-    stroke(165, 165, 141);
-    strokeWeight(0.7);
-    bezier(
-      658 + spx,
-      215 + spy,
-      651 + spx,
-      210 + spy,
-      647 + spx,
-      215 + spy,
-      642 + spx,
-      220 + spy
-    );
-    bezier(
-      626 + spx,
-      215 + spy,
-      630 + spx,
-      210 + spy,
-      635 + spx,
-      210 + spy,
-      642 + spx,
-      220 + spy
-    );
+
     //bird 2
-    stroke(255);
+    stroke(1);
     strokeWeight(2.5);
     bezier(
-      458 + spx2,
+      258 + spx2,
       315 + spy,
-      451 + spx2,
+      251 + spx2,
       310 + spy,
-      447 + spx2,
+      247 + spx2,
       315 + spy,
-      442 + spx2,
+      242 + spx2,
       320 + spy
     );
     bezier(
-      426 + spx2,
+      226 + spx2,
       315 + spy,
-      430 + spx2,
+      230 + spx2,
       310 + spy,
-      435 + spx2,
+      235 + spx2,
       310 + spy,
-      442 + spx2,
+      242 + spx2,
       320 + spy
     );
-    stroke(165, 165, 141);
-    strokeWeight(0.7);
-    bezier(
-      458 + spx2,
-      315 + spy,
-      451 + spx2,
-      310 + spy,
-      447 + spx2,
-      315 + spy,
-      442 + spx2,
-      320 + spy
-    );
-    bezier(
-      426 + spx2,
-      315 + spy,
-      430 + spx2,
-      310 + spy,
-      435 + spx2,
-      310 + spy,
-      442 + spx2,
-      320 + spy
-    );
+
     //bird 3:
-    stroke(255);
+    stroke(1);
     strokeWeight(2.5);
     bezier(
-      488 + spx3,
+      288 + spx3,
       315 + spy3,
-      481 + spx3,
+      281 + spx3,
       310 + spy3,
-      477 + spx3,
+      277 + spx3,
       315 + spy3,
-      472 + spx3,
+      272 + spx3,
       320 + spy3
     );
     bezier(
-      456 + spx3,
+      256 + spx3,
       315 + spy3,
-      460 + spx3,
+      260 + spx3,
       310 + spy3,
-      465 + spx3,
+      265 + spx3,
       310 + spy3,
-      472 + spx3,
+      272 + spx3,
       320 + spy3
     );
-    stroke(165, 165, 141);
-    strokeWeight(0.7);
+
+    //bird 4:
+    stroke(1);
+    strokeWeight(2.5);
     bezier(
-      488 + spx3,
-      315 + spy3,
-      481 + spx3,
-      310 + spy3,
-      477 + spx3,
-      315 + spy3,
-      472 + spx3,
-      320 + spy3
+      188 + spx4,
+      215 + spy3,
+      181 + spx4,
+      210 + spy3,
+      177 + spx4,
+      215 + spy3,
+      172 + spx4,
+      220 + spy3
     );
     bezier(
-      456 + spx3,
-      315 + spy3,
-      460 + spx3,
-      310 + spy3,
-      465 + spx3,
-      310 + spy3,
-      472 + spx3,
-      320 + spy3
+      156 + spx4,
+      215 + spy3,
+      160 + spx4,
+      210 + spy3,
+      165 + spx4,
+      210 + spy3,
+      172 + spx4,
+      220 + spy3
     );
+    //bird 5:
+    stroke(1);
+    strokeWeight(2.5);
+    bezier(
+      88 + spx,
+      115 + spy3,
+      81 + spx,
+      110 + spy3,
+      77 + spx,
+      115 + spy3,
+      72 + spx,
+      120 + spy3
+    );
+    bezier(
+      56 + spx,
+      115 + spy3,
+      60 + spx,
+      110 + spy3,
+      65 + spx,
+      110 + spy3,
+      72 + spx,
+      120 + spy3
+    );
+
     spx += flightSpeedX;
     spx2 += flightSpeedX2;
     spx3 += flightSpeedX3;
+    spx4 += flightSpeedX4;
     spy -= flightSpeedY;
-    if (spx < -100 || spx > 180) {
+    if (spx < -100 || spx > 280) {
       flightSpeedX *= -1;
     }
-    if (spx2 < -100 || spx2 > 180) {
+    if (spx2 < -100 || spx2 > 280) {
       flightSpeedX2 *= -1;
     }
-    if (spx3 < -100 || spx3 > 180) {
+    if (spx3 < -100 || spx3 > 280) {
       flightSpeedX3 *= -1;
+    }
+    if (spx4 < -100 || spx4 > 280) {
+      flightSpeedX4 *= -1;
     }
     if (spy < -150 || spy > 0) {
       flightSpeedY *= -1;
     }
+  }
+  function asteroids(x, y) {
+    translate(x, y);
+    push();
+    fill(grey);
+    ellipse(200, 100, 40, 40);
+    pop();
   }
 }
