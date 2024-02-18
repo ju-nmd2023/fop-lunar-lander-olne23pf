@@ -1,9 +1,10 @@
 let backgroundY = 0;
+let screen = 0;
 
-let spacecraftY = 60;
-let spacecraftX = 0;
-let x = 2000;
-let move = 5;
+let spacecraftY = 330;
+let spacecraftX = 300;
+let move = 10;
+let angle = 0;
 
 let asteroidsY = 0;
 let asteroidsX = 0;
@@ -22,12 +23,14 @@ let spx4 = 20;
 let spy = -50;
 let spy3 = -200;
 
+let gameIsRunning = true;
+
 function setup() {
   createCanvas(600, 400);
+  angleMode(DEGREES);
 }
 
 function scenery() {
-  //background(50, 50, 50);
   fill(50, 50, 50);
   noStroke();
   rect(0, 0, 600, 400);
@@ -61,98 +64,412 @@ function background(x, y) {
 
 function spacecraft(x, y) {
   push();
-  translate(x, y);
   noStroke();
+  translate(spacecraftX, spacecraftY);
+
+  rotate(angle);
   //base
   fill(170, 170, 170);
   beginShape();
-  vertex(285, 260);
-  bezierVertex(285, 260, 250, 185, 300, 160);
-  bezierVertex(300, 160, 350, 185, 315, 260);
-  bezierVertex(315, 260, 300, 265, 285, 260);
+  vertex(285 - 300, 260 - 270);
+  bezierVertex(
+    285 - 300,
+    260 - 270,
+    250 - 300,
+    185 - 270,
+    300 - 300,
+    160 - 270
+  );
+  bezierVertex(
+    300 - 300,
+    160 - 270,
+    350 - 300,
+    185 - 270,
+    315 - 300,
+    260 - 270
+  );
+  bezierVertex(
+    315 - 300,
+    260 - 270,
+    300 - 300,
+    265 - 270,
+    285 - 300,
+    260 - 270
+  );
   endShape();
   //dark metal bottom
   fill(100, 100, 100);
   beginShape();
-  vertex(285, 260);
-  bezierVertex(285, 260, 300, 265, 315, 260);
-  bezierVertex(315, 260, 317, 265, 315, 270);
-  bezierVertex(315, 270, 300, 275, 285, 270);
-  bezierVertex(285, 270, 283, 265, 285, 260);
+  vertex(285 - 300, 260 - 270);
+  bezierVertex(
+    285 - 300,
+    260 - 270,
+    300 - 300,
+    265 - 270,
+    315 - 300,
+    260 - 270
+  );
+  bezierVertex(
+    315 - 300,
+    260 - 270,
+    317 - 300,
+    265 - 270,
+    315 - 300,
+    270 - 270
+  );
+  bezierVertex(
+    315 - 300,
+    270 - 270,
+    300 - 300,
+    275 - 270,
+    285 - 300,
+    270 - 270
+  );
+  bezierVertex(
+    285 - 300,
+    270 - 270,
+    283 - 300,
+    265 - 270,
+    285 - 300,
+    260 - 270
+  );
   endShape();
   //red
   fill(170, 40, 40);
   beginShape();
-  vertex(278, 180);
-  bezierVertex(280, 180, 285, 165, 300, 160);
-  bezierVertex(300, 160, 315, 165, 320, 180);
-  bezierVertex(320, 180, 300, 172, 280, 180);
+  vertex(278 - 300, 180 - 270);
+  bezierVertex(
+    280 - 300,
+    180 - 270,
+    285 - 300,
+    165 - 270,
+    300 - 300,
+    160 - 270
+  );
+  bezierVertex(
+    300 - 300,
+    160 - 270,
+    315 - 300,
+    165 - 270,
+    320 - 300,
+    180 - 270
+  );
+  bezierVertex(
+    320 - 300,
+    180 - 270,
+    300 - 300,
+    172 - 270,
+    280 - 300,
+    180 - 270
+  );
   endShape();
   //red - right leg
   beginShape();
-  vertex(315, 240);
-  bezierVertex(315, 240, 316, 235, 320, 235, 330, 239);
-  bezierVertex(330, 239, 334, 241, 336, 248, 340, 250);
-  bezierVertex(340, 250, 335, 278, 330, 279, 325, 280);
-  bezierVertex(325, 280, 330, 260, 323, 257, 320, 255);
-  bezierVertex(320, 255, 315, 252, 314, 248, 315, 240);
+  vertex(315 - 300, 240 - 270);
+  bezierVertex(
+    315 - 300,
+    240 - 270,
+    316 - 300,
+    235 - 270,
+    320 - 300,
+    235 - 270,
+    330 - 300,
+    239 - 270
+  );
+  bezierVertex(
+    330 - 300,
+    239 - 270,
+    334 - 300,
+    241 - 270,
+    336 - 300,
+    248 - 270,
+    340 - 300,
+    250 - 270
+  );
+  bezierVertex(
+    340 - 300,
+    250 - 270,
+    335 - 300,
+    278 - 270,
+    330 - 300,
+    279 - 270,
+    325 - 300,
+    280 - 270
+  );
+  bezierVertex(
+    325 - 300,
+    280 - 270,
+    330 - 300,
+    260 - 270,
+    323 - 300,
+    257 - 270,
+    320 - 300,
+    255 - 270
+  );
+  bezierVertex(
+    320 - 300,
+    255 - 270,
+    315 - 300,
+    252 - 270,
+    314 - 300,
+    248 - 270,
+    315 - 300,
+    240 - 270
+  );
   endShape();
   //red - left leg
   beginShape();
-  vertex(285, 240);
-  bezierVertex(285, 240, 284, 235, 280, 235, 270, 239);
-  bezierVertex(270, 239, 266, 241, 264, 248, 260, 250);
-  bezierVertex(260, 250, 265, 278, 270, 279, 275, 280);
-  bezierVertex(275, 280, 270, 260, 277, 257, 280, 255);
-  bezierVertex(280, 255, 285, 252, 286, 248, 285, 240);
+  vertex(285 - 300, 240 - 270);
+  bezierVertex(
+    285 - 300,
+    240 - 270,
+    284 - 300,
+    235 - 270,
+    280 - 300,
+    235 - 270,
+    270 - 300,
+    239 - 270
+  );
+  bezierVertex(
+    270 - 300,
+    239 - 270,
+    266 - 300,
+    241 - 270,
+    264 - 300,
+    248 - 270,
+    260 - 300,
+    250 - 270
+  );
+  bezierVertex(
+    260 - 300,
+    250 - 270,
+    265 - 300,
+    278 - 270,
+    270 - 300,
+    279 - 270,
+    275 - 300,
+    280 - 270
+  );
+  bezierVertex(
+    275 - 300,
+    280 - 270,
+    270 - 300,
+    260 - 270,
+    277 - 300,
+    257 - 270,
+    280 - 300,
+    255 - 270
+  );
+  bezierVertex(
+    280 - 300,
+    255 - 270,
+    285 - 300,
+    252 - 270,
+    286 - 300,
+    248 - 270,
+    285 - 300,
+    240 - 270
+  );
   endShape();
   //widnow
   fill(110, 110, 110);
-  ellipse(300, 210, 40, 40);
+  ellipse(300 - 300, 210 - 270, 40, 40);
   //widnow - glass
   fill(200, 240, 255, 170);
-  ellipse(300, 210, 30, 30);
+  ellipse(300 - 300, 210 - 270, 30, 30);
   //screws
   fill(180, 180, 180);
   stroke(1);
   strokeWeight(0.2);
   //screws - window
-  ellipse(300, 193, 2, 2);
-  ellipse(310, 196, 2, 2);
-  ellipse(316, 204, 2, 2);
-  ellipse(316.5, 215, 2, 2);
-  ellipse(310, 224, 2, 2);
-  ellipse(300, 227, 2, 2);
-  ellipse(290, 224, 2, 2);
-  ellipse(283.5, 215, 2, 2);
-  ellipse(284, 204, 2, 2);
-  ellipse(290, 196, 2, 2);
+  ellipse(300 - 300, 193 - 270, 2, 2);
+  ellipse(310 - 300, 196 - 270, 2, 2);
+  ellipse(316 - 300, 204 - 270, 2, 2);
+  ellipse(316.5 - 300, 215 - 270, 2, 2);
+  ellipse(310 - 300, 224 - 270, 2, 2);
+  ellipse(300 - 300, 227 - 270, 2, 2);
+  ellipse(290 - 300, 224 - 270, 2, 2);
+  ellipse(283.5 - 300, 215 - 270, 2, 2);
+  ellipse(284 - 300, 204 - 270, 2, 2);
+  ellipse(290 - 300, 196 - 270, 2, 2);
   //screws - base
-  ellipse(300, 180, 2, 2);
-  ellipse(310, 181, 2, 2);
-  ellipse(319, 182.5, 2, 2);
-  ellipse(290, 181, 2, 2);
-  ellipse(281, 182.5, 2, 2);
+  ellipse(300 - 300, 180 - 270, 2, 2);
+  ellipse(310 - 300, 181 - 270, 2, 2);
+  ellipse(319 - 300, 182.5 - 270, 2, 2);
+  ellipse(290 - 300, 181 - 270, 2, 2);
+  ellipse(281 - 300, 182.5 - 270, 2, 2);
 
   pop();
 }
 
-let gameIsRunning = true;
+//Got birds from https://editor.p5js.org/KatalinVarga/sketches/rT-XktCX-
+function bird(x, y) {
+  translate(x, y);
+  stroke(1);
+  strokeWeight(2.5);
+  noFill();
+  // bird 1
+  bezier(
+    258 + spx,
+    215 + spy,
+    251 + spx,
+    210 + spy,
+    247 + spx,
+    215 + spy,
+    242 + spx,
+    220 + spy
+  );
+  bezier(
+    226 + spx,
+    215 + spy,
+    230 + spx,
+    210 + spy,
+    235 + spx,
+    210 + spy,
+    242 + spx,
+    220 + spy
+  );
+
+  //bird 2
+  stroke(1);
+  strokeWeight(2.5);
+  bezier(
+    258 + spx2,
+    315 + spy,
+    251 + spx2,
+    310 + spy,
+    247 + spx2,
+    315 + spy,
+    242 + spx2,
+    320 + spy
+  );
+  bezier(
+    226 + spx2,
+    315 + spy,
+    230 + spx2,
+    310 + spy,
+    235 + spx2,
+    310 + spy,
+    242 + spx2,
+    320 + spy
+  );
+
+  //bird 3:
+  stroke(1);
+  strokeWeight(2.5);
+  bezier(
+    288 + spx3,
+    315 + spy3,
+    281 + spx3,
+    310 + spy3,
+    277 + spx3,
+    315 + spy3,
+    272 + spx3,
+    320 + spy3
+  );
+  bezier(
+    256 + spx3,
+    315 + spy3,
+    260 + spx3,
+    310 + spy3,
+    265 + spx3,
+    310 + spy3,
+    272 + spx3,
+    320 + spy3
+  );
+
+  //bird 4:
+  stroke(1);
+  strokeWeight(2.5);
+  bezier(
+    188 + spx4,
+    215 + spy3,
+    181 + spx4,
+    210 + spy3,
+    177 + spx4,
+    215 + spy3,
+    172 + spx4,
+    220 + spy3
+  );
+  bezier(
+    156 + spx4,
+    215 + spy3,
+    160 + spx4,
+    210 + spy3,
+    165 + spx4,
+    210 + spy3,
+    172 + spx4,
+    220 + spy3
+  );
+  //bird 5:
+  stroke(1);
+  strokeWeight(2.5);
+  bezier(
+    88 + spx,
+    115 + spy3,
+    81 + spx,
+    110 + spy3,
+    77 + spx,
+    115 + spy3,
+    72 + spx,
+    120 + spy3
+  );
+  bezier(
+    56 + spx,
+    115 + spy3,
+    60 + spx,
+    110 + spy3,
+    65 + spx,
+    110 + spy3,
+    72 + spx,
+    120 + spy3
+  );
+}
+
+function asteroids(x, y) {
+  push();
+  translate(x, y);
+  beginShape();
+  vertex(70, 50);
+  fill(100, 100, 100);
+  noStroke();
+  bezierVertex(70, 50, 90, 70, 70, 80);
+  bezierVertex(70, 80, 55, 85, 50, 80);
+  bezierVertex(50, 80, 30, 80, 30, 70);
+  bezierVertex(30, 70, 25, 50, 50, 50);
+  bezierVertex(50, 50, 60, 40, 70, 50);
+  endShape();
+  fill(120, 120, 120);
+  ellipse(65, 60, 8, 10);
+  ellipse(40, 70, 8, 5);
+  ellipse(50, 63, 6, 6);
+  ellipse(60, 75, 12, 6);
+  ellipse(39, 56, 7, 4);
+  pop();
+}
+
+//got inspiration for the startpage and code structure from: https://editor.p5js.org/ehersh/sketches/BkCYHm7Rm
 function draw() {
   scenery();
   background(0, backgroundY);
   spacecraft(spacecraftX, spacecraftY);
-  bird(0, birdY);
-  asteroids(asteroidsMinusX + 100, asteroidsY);
-  asteroids(asteroidsMinusX, asteroidsY);
-  asteroids(asteroidsX + 100, asteroidsY);
-  asteroids(asteroidsX, asteroidsY);
-
-  if (gameIsRunning === true) {
-    //background moving/spacecraft flying
-
-    //backgroundY = backgroundY + 2;
-    //birdY = birdY + 1;
+  if (screen == 0) {
+    fill(1);
+    strokeWeight(1);
+    textSize(30);
+    textFont("Courier");
+    textAlign(CENTER);
+    text("Click to Start!", 300, 210);
+  } else if (screen == 1) {
+    //start game
+    bird(0, birdY);
+    asteroids(asteroidsMinusX + 100, asteroidsY);
+    asteroids(asteroidsMinusX, asteroidsY);
+    asteroids(asteroidsX + 100, asteroidsY);
+    asteroids(asteroidsX, asteroidsY);
+    //background moving/spacecraft "flying"
+    backgroundY = backgroundY + 2;
+    birdY = birdY + 1;
     asteroidsY = asteroidsY + 2;
     asteroidsX = asteroidsX + 1.4;
     asteroidsMinusX = asteroidsMinusX - 2;
@@ -165,23 +482,22 @@ function draw() {
     if (asteroidsY > 400) {
       asteroidsY = 0;
     }
-    //moving the spacecraft sideways
-    if (keyCode == LEFT_ARROW && keyIsPressed) {
+
+    //spin the spacecraft
+    if (keyCode == DOWN_ARROW && keyIsPressed) {
+      angle += 3;
+    } else if (keyCode == UP_ARROW && keyIsPressed) {
+      angle -= 3;
+    } else if (keyCode == LEFT_ARROW && keyIsPressed) {
       spacecraftX = spacecraftX - move;
     } else if (keyCode == RIGHT_ARROW && keyIsPressed) {
       spacecraftX = spacecraftX + move;
     }
-    //spin the spacecraft
-    if ((backgroundY = -1000)) {
-      if (keyCode == BOTTOM_ARROW && keyIsPressed) {
-        spacecraftZ = spacecraftZ + turn;
-      }
-    }
     //add walls on the sides of the canvas so the spacecraft cant move outside it
-    if (spacecraftX < -260) {
+    if (spacecraftX < 40) {
       spacecraftX = spacecraftX + move;
     }
-    if (spacecraftX > 260) {
+    if (spacecraftX > 560) {
       spacecraftX = spacecraftX - move;
     }
 
@@ -206,151 +522,23 @@ function draw() {
     if (spy < -150 || spy > 0) {
       flightSpeedY *= -1;
     }
+  } else if (screen == 2) {
+    //game over
+    fill(50);
+    rect(0, 0, 600, 400);
+    fill(200, 0, 0);
+    textSize(30);
+    textFont("Courier");
+    textAlign(CENTER);
+    text("GAME OVER", 300, 200);
+    textSize(20);
+    text("Click to play again", 300, 230);
   }
-
-  //Got birds from https://editor.p5js.org/KatalinVarga/sketches/rT-XktCX-
-
-  function bird(x, y) {
-    translate(x, y);
-    stroke(1);
-    strokeWeight(2.5);
-    noFill();
-    // bird 1
-    bezier(
-      258 + spx,
-      215 + spy,
-      251 + spx,
-      210 + spy,
-      247 + spx,
-      215 + spy,
-      242 + spx,
-      220 + spy
-    );
-    bezier(
-      226 + spx,
-      215 + spy,
-      230 + spx,
-      210 + spy,
-      235 + spx,
-      210 + spy,
-      242 + spx,
-      220 + spy
-    );
-
-    //bird 2
-    stroke(1);
-    strokeWeight(2.5);
-    bezier(
-      258 + spx2,
-      315 + spy,
-      251 + spx2,
-      310 + spy,
-      247 + spx2,
-      315 + spy,
-      242 + spx2,
-      320 + spy
-    );
-    bezier(
-      226 + spx2,
-      315 + spy,
-      230 + spx2,
-      310 + spy,
-      235 + spx2,
-      310 + spy,
-      242 + spx2,
-      320 + spy
-    );
-
-    //bird 3:
-    stroke(1);
-    strokeWeight(2.5);
-    bezier(
-      288 + spx3,
-      315 + spy3,
-      281 + spx3,
-      310 + spy3,
-      277 + spx3,
-      315 + spy3,
-      272 + spx3,
-      320 + spy3
-    );
-    bezier(
-      256 + spx3,
-      315 + spy3,
-      260 + spx3,
-      310 + spy3,
-      265 + spx3,
-      310 + spy3,
-      272 + spx3,
-      320 + spy3
-    );
-
-    //bird 4:
-    stroke(1);
-    strokeWeight(2.5);
-    bezier(
-      188 + spx4,
-      215 + spy3,
-      181 + spx4,
-      210 + spy3,
-      177 + spx4,
-      215 + spy3,
-      172 + spx4,
-      220 + spy3
-    );
-    bezier(
-      156 + spx4,
-      215 + spy3,
-      160 + spx4,
-      210 + spy3,
-      165 + spx4,
-      210 + spy3,
-      172 + spx4,
-      220 + spy3
-    );
-    //bird 5:
-    stroke(1);
-    strokeWeight(2.5);
-    bezier(
-      88 + spx,
-      115 + spy3,
-      81 + spx,
-      110 + spy3,
-      77 + spx,
-      115 + spy3,
-      72 + spx,
-      120 + spy3
-    );
-    bezier(
-      56 + spx,
-      115 + spy3,
-      60 + spx,
-      110 + spy3,
-      65 + spx,
-      110 + spy3,
-      72 + spx,
-      120 + spy3
-    );
-  }
-  function asteroids(x, y) {
-    push();
-    translate(x, y);
-    beginShape();
-    vertex(70, 50);
-    fill(100, 100, 100);
-    noStroke();
-    bezierVertex(70, 50, 90, 70, 70, 80);
-    bezierVertex(70, 80, 55, 85, 50, 80);
-    bezierVertex(50, 80, 30, 80, 30, 70);
-    bezierVertex(30, 70, 25, 50, 50, 50);
-    bezierVertex(50, 50, 60, 40, 70, 50);
-    endShape();
-    fill(120, 120, 120);
-    ellipse(65, 60, 8, 10);
-    ellipse(40, 70, 8, 5);
-    ellipse(50, 63, 6, 6);
-    ellipse(60, 75, 12, 6);
-    ellipse(39, 56, 7, 4);
-    pop();
+}
+function mousePressed() {
+  if (screen == 0) {
+    screen = 1;
+  } else if (screen == 1) {
+  } else if (screen == 2) {
   }
 }
