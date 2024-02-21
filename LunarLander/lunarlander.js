@@ -1,14 +1,26 @@
 let backgroundY = 0;
 let screen = 0;
+let velocity = 1;
+const gravity = 0.01;
+//let spacecraftY = 330;
+//let spacecraftX = 300;
+//let move = 10;
+//let angle = 0;
+let x = 300;
+let y = 280;
+let x2 = 0;
+let rotation = 0;
+//let speed = 1;
+let p1;
 
-let spacecraftY = 330;
-let spacecraftX = 300;
-let move = 10;
-let angle = 0;
+let spacecraftX = x;
+let spacecraftY = y + 50;
 
 let asteroidsY = 0;
 let asteroidsX = 0;
 let asteroidsMinusX = 600;
+
+let moonY = -2000;
 
 let birdY = 0;
 let flightSpeedX = 1;
@@ -59,15 +71,21 @@ function background(x, y) {
   noStroke();
   rect(0, -400, 600, -400);
 
+  //moon
+  noStroke();
+  fill(150, 150, 150);
+  ellipse(x + 170, moonY, 400, 240);
+  fill(130, 130, 130);
+  ellipse(x + 220, moonY - 50, 50, 40);
+
   pop();
 }
 
-function spacecraft(x, y) {
+function spacecraft(x, y, rotation) {
   push();
   noStroke();
-  translate(spacecraftX, spacecraftY);
-
-  rotate(angle);
+  translate(spacecraftX, spacecraftY, rotation);
+  rotate(rotation);
   //base
   fill(170, 170, 170);
   beginShape();
@@ -298,13 +316,28 @@ function spacecraft(x, y) {
   ellipse(319 - 300, 182.5 - 270, 2, 2);
   ellipse(290 - 300, 181 - 270, 2, 2);
   ellipse(281 - 300, 182.5 - 270, 2, 2);
-
   pop();
-}
 
+  //fire
+  if (keyIsDown(38)) {
+    push();
+    fill(250, 90, 0);
+    stroke(255, 0, 0);
+    triangle(x - 15, y, x - 10, y + 20, x - 5, y);
+    triangle(x - 5, y, x, y + 30, x + 5, y);
+    triangle(x + 5, y, x + 10, y + 20, x + 15, y);
+    fill(255, 200, 0);
+    noStroke();
+    triangle(x - 13, y, x - 10, y + 10, x - 7, y);
+    triangle(x - 3, y, x, y + 20, x + 3, y);
+    triangle(x + 7, y, x + 10, y + 20, x + 13, y);
+    pop();
+  }
+}
 //Got birds from https://editor.p5js.org/KatalinVarga/sketches/rT-XktCX-
 function bird(x, y) {
-  translate(x, y);
+  push();
+  translate(x, birdY);
   stroke(1);
   strokeWeight(2.5);
   noFill();
@@ -424,6 +457,7 @@ function bird(x, y) {
     72 + spx,
     120 + spy3
   );
+  pop();
 }
 
 function asteroids(x, y) {
@@ -452,7 +486,7 @@ function asteroids(x, y) {
 function draw() {
   scenery();
   background(0, backgroundY);
-  spacecraft(spacecraftX, spacecraftY);
+
   if (screen == 0) {
     fill(1);
     strokeWeight(1);
@@ -460,19 +494,56 @@ function draw() {
     textFont("Courier");
     textAlign(CENTER);
     text("Click to Start!", 300, 210);
+    spacecraft();
   } else if (screen == 1) {
     //start game
+
     bird(0, birdY);
-    asteroids(asteroidsMinusX + 100, asteroidsY);
-    asteroids(asteroidsMinusX, asteroidsY);
-    asteroids(asteroidsX + 100, asteroidsY);
-    asteroids(asteroidsX, asteroidsY);
-    //background moving/spacecraft "flying"
-    backgroundY = backgroundY + 2;
-    birdY = birdY + 1;
-    asteroidsY = asteroidsY + 2;
-    asteroidsX = asteroidsX + 1.4;
-    asteroidsMinusX = asteroidsMinusX - 2;
+    //asteroids(asteroidsMinusX + 100, asteroidsY);
+    //asteroids(asteroidsMinusX, asteroidsY);
+    //asteroids(asteroidsX + 100, asteroidsY);
+    //asteroids(asteroidsX, asteroidsY);
+
+    birdY += velocity;
+    //asteroidsY = asteroidsY + 2;
+    //asteroidsX = asteroidsX + 1.4;
+    //asteroidsMinusX = asteroidsMinusX - 2;
+
+    //move the spacecraft
+    spacecraft(spacecraftX, spacecraftY, rotation);
+    backgroundY += velocity;
+    velocity += gravity;
+    if (keyIsDown(38)) {
+      velocity += 0.02;
+      spacecraftY -= 6;
+    } else if (keyIsDown(40)) {
+      velocity -= 0.02;
+      spacecraftY += 2;
+    } else {
+      spacecraftY += 0;
+    }
+
+    if (keyIsDown(37)) {
+      spacecraftX -= 6;
+    } else if (keyIsDown(39)) {
+      spacecraftX += 6;
+    } else {
+      spacecraftX += 0;
+    }
+
+    if (keyCode == 32 && keyIsPressed) {
+      rotation += 3;
+    }
+
+    //add walls on the sides of the canvas so the spacecraft cant move outside it
+    if (x > 40) {
+      x += -6;
+    }
+    if (x < 560) {
+      x += 6;
+    }
+
+    //obstacles - asteroids
     if (asteroidsX > 700) {
       asteroidsX = 0;
     }
@@ -482,26 +553,7 @@ function draw() {
     if (asteroidsY > 400) {
       asteroidsY = 0;
     }
-
-    //spin the spacecraft
-    if (keyCode == DOWN_ARROW && keyIsPressed) {
-      angle += 3;
-    } else if (keyCode == UP_ARROW && keyIsPressed) {
-      angle -= 3;
-    } else if (keyCode == LEFT_ARROW && keyIsPressed) {
-      spacecraftX = spacecraftX - move;
-    } else if (keyCode == RIGHT_ARROW && keyIsPressed) {
-      spacecraftX = spacecraftX + move;
-    }
-    //add walls on the sides of the canvas so the spacecraft cant move outside it
-    if (spacecraftX < 40) {
-      spacecraftX = spacecraftX + move;
-    }
-    if (spacecraftX > 560) {
-      spacecraftX = spacecraftX - move;
-    }
-
-    //obstacles
+    //obstacles - birds
     spx += flightSpeedX;
     spx2 += flightSpeedX2;
     spx3 += flightSpeedX3;
@@ -522,7 +574,33 @@ function draw() {
     if (spy < -150 || spy > 0) {
       flightSpeedY *= -1;
     }
+
+    //background stops moving when the moon appears and collisions
+    if (backgroundY > 2000) {
+      velocity = 0;
+      backgroundY += 0;
+      if (
+        124 < spacecraftY < 130 &&
+        100 < spacecraftX < 200 &&
+        170 < rotation < 190
+      ) {
+        print("you win");
+      }
+    } else {
+      backgroundY += velocity;
+    }
   } else if (screen == 2) {
+    //you won
+    fill(50);
+    rect(0, 0, 600, 400);
+    fill(255);
+    textSize(30);
+    textFont("Courier");
+    textAlign(CENTER);
+    text("YOU WON", 300, 200);
+    textSize(20);
+    text("Click to play again", 300, 230);
+  } else if (screen == 3) {
     //game over
     fill(50);
     rect(0, 0, 600, 400);
@@ -532,8 +610,13 @@ function draw() {
     textAlign(CENTER);
     text("GAME OVER", 300, 200);
     textSize(20);
-    text("Click to play again", 300, 230);
+    text("Click to try again", 300, 230);
   }
+  //let y2 = backgroundY - spacecraftY + 280 + 50;
+
+  //print(y2);
+  print(spacecraftY);
+  print(spacecraftX);
 }
 function mousePressed() {
   if (screen == 0) {
