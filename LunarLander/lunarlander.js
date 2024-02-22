@@ -1,5 +1,9 @@
+function setup() {
+  createCanvas(600, 400);
+  angleMode(DEGREES);
+}
 let backgroundY = 0;
-let screen = 2;
+let screen = 0;
 let velocity = 1;
 const gravity = 0.01;
 //let spacecraftY = 330;
@@ -8,10 +12,8 @@ const gravity = 0.01;
 //let angle = 0;
 let x = 300;
 let y = 280;
-let x2 = 0;
 let rotation = 0;
 //let speed = 1;
-let p1;
 
 let spacecraftX = x;
 let spacecraftY = y + 50;
@@ -37,11 +39,6 @@ let spy3 = -200;
 
 let gameIsRunning = true;
 let gameOver = false;
-
-function setup() {
-  createCanvas(600, 400);
-  angleMode(DEGREES);
-}
 
 function scenery() {
   //space
@@ -544,6 +541,7 @@ function resetStart() {
 function resetGame() {
   scenery();
   background(0, backgroundY);
+
   //start game
 
   bird(0, birdY);
@@ -685,6 +683,8 @@ function mousePressed() {
     } else {
       resetGame();
       screen = 1;
+      backgroundY = 0;
+      birdY = 0;
     }
   } else if (screen == 1) {
   } else if (screen == 2) {
