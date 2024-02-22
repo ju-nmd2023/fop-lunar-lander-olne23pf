@@ -1,9 +1,11 @@
 function setup() {
   createCanvas(600, 400);
   angleMode(DEGREES);
+  frameRate(30);
+  resetSketch();
 }
-let backgroundY = 0;
-let screen = 0;
+let environmentY = 0;
+let screen = 2;
 let velocity = 1;
 const gravity = 0.01;
 //let spacecraftY = 330;
@@ -13,7 +15,6 @@ const gravity = 0.01;
 let x = 300;
 let y = 280;
 let rotation = 0;
-//let speed = 1;
 
 let spacecraftX = x;
 let spacecraftY = y + 50;
@@ -24,7 +25,7 @@ let asteroidsMinusX = 600;
 
 let moonY = -2000;
 
-let birdY = 0;
+let birdY = -300;
 let flightSpeedX = 1;
 let flightSpeedX2 = -2;
 let flightSpeedX3 = -3;
@@ -38,7 +39,6 @@ let spy = -50;
 let spy3 = -200;
 
 let gameIsRunning = true;
-let gameOver = false;
 
 function scenery() {
   //space
@@ -46,13 +46,10 @@ function scenery() {
   noStroke();
   rect(0, 0, 600, 400);
 }
-
 //moving background when game is running
-function background(x, y) {
+function environment(x, y) {
   push();
-  translate(x, y);
-
-  //STARTIMAGE-IMG1
+  translate(x, environmentY);
   //grass
   fill(50, 130, 50);
   noStroke();
@@ -73,10 +70,7 @@ function background(x, y) {
   //moon
   noStroke();
   fill(150, 150, 150);
-  ellipse(x + 170, moonY, 400, 240);
-  fill(130, 130, 130);
-  ellipse(x + 220, moonY - 50, 50, 40);
-
+  ellipse(130, moonY, 500, 240);
   pop();
 }
 
@@ -482,7 +476,7 @@ function asteroids(x, y) {
 }
 
 function infoBox() {
-  background(0, 0);
+  environment(0, 0);
   spacecraft();
   spacecraftX = 100;
   spacecraftY = 330;
@@ -516,48 +510,23 @@ function infoBox() {
   text("BACK", 540, 370);
   pop();
 }
-function resetStart() {
-  background(0, 0);
-  spacecraft();
-  spacecraftX = 300;
-  spacecraftY = 330;
-  push();
-  fill(1);
-  textFont("Courier");
-  textAlign(CENTER);
-  textSize(30);
-  text("Click to Start!", 300, 180);
-  //info
-  fill(255);
-  stroke(1);
-  ellipse(570, 370, 22, 22);
-  fill(1);
-  textFont("Courier");
-  textSize(18);
-  stroke(1);
-  text("i", 570, 375);
-  pop();
-}
 function resetGame() {
-  scenery();
-  background(0, backgroundY);
-
   //start game
-
+  scenery();
+  environment(0, environmentY);
   bird(0, birdY);
+
   //asteroids(asteroidsMinusX + 100, asteroidsY);
   //asteroids(asteroidsMinusX, asteroidsY);
   //asteroids(asteroidsX + 100, asteroidsY);
   //asteroids(asteroidsX, asteroidsY);
-
-  birdY += 2;
   //asteroidsY = asteroidsY + 2;
   //asteroidsX = asteroidsX + 1.4;
   //asteroidsMinusX = asteroidsMinusX - 2;
-
+  birdY += 2;
   //move the spacecraft
   spacecraft(spacecraftX, spacecraftY, rotation);
-  backgroundY += velocity;
+  environmentY += velocity;
   velocity += gravity;
   birdY += velocity;
   if (keyIsDown(38)) {
@@ -622,86 +591,124 @@ function resetGame() {
     flightSpeedY *= -1;
   }
 
-  //background stops moving when the moon appears and collisions
-  if (0 < backgroundY < 2000) {
-    backgroundY += velocity;
+  //background stops moving when the moon appears
+  if (0 < environmentY < 2000) {
+    environmentY += velocity;
   }
-  if (backgroundY > 2000) {
-    backgroundY -= velocity;
+  if (environmentY > 2000) {
+    environmentY -= velocity;
     velocity = -0.02;
   }
-  if (
-    backgroundY > 2000 &&
-    100 < spacecraftX < 250 &&
-    spacecraftY < 129 &&
-    rotation === 180
-  ) {
-    screen = 2;
-  }
-  if (backgroundY > 2000 && 250 < spacecraftX < 600 && spacecraftY < 80) {
-    screen = 3;
-  }
+}
+function resetStart() {
+  //start page
+  environment();
+  spacecraft();
+  spacecraftX = 300;
+  spacecraftY = 330;
+  push();
+  fill(1);
+  textFont("Courier");
+  textAlign(CENTER);
+  textSize(30);
+  text("Click to Start!", 300, 180);
+  //info
+  fill(255);
+  stroke(1);
+  ellipse(570, 370, 22, 22);
+  fill(1);
+  textFont("Courier");
+  textSize(18);
+  stroke(1);
+  text("i", 570, 375);
+  pop();
 }
 
 //got inspiration for the startpage and code structure from: https://editor.p5js.org/ehersh/sketches/BkCYHm7Rm
 function draw() {
+  clear();
   if (screen == 0) {
+    //start screen
     resetStart();
   } else if (screen == 1) {
+    //game screen
     resetGame();
+    if (
+      environmentY > 2000 &&
+      80 < spacecraftX < 250 &&
+      spacecraftY < 129 &&
+      rotation > 170 &&
+      rotation < 190
+    ) {
+      screen = 2; //you win
+    } else if (
+      environmentY > 2000 &&
+      80 < spacecraftX < 250 &&
+      spacecraftY < 140 &&
+      rotation > 190 &&
+      rotation < 170
+    ) {
+      screen = 3; // game over
+    }
+    if (environmentY > 2000 && 250 < spacecraftX < 600 && spacecraftY < 80) {
+      screen = 3; // game over
+    }
   } else if (screen == 2) {
     //you won
     fill(50);
     rect(0, 0, 600, 400);
     fill(255);
-    textSize(30);
+    textSize(40);
     textFont("Courier");
     textAlign(CENTER);
     text("YOU WON", 300, 200);
-    textSize(20);
-    text("Click to play again", 300, 230);
+
+    //button
+    let button = createButton("Play Again");
+    button.position(270, 240);
+    button.size(100, 30);
+    button.mousePressed(resetSketch);
   } else if (screen == 3) {
     //game over
     fill(50);
     rect(0, 0, 600, 400);
     fill(200, 0, 0);
-    textSize(30);
+    textSize(40);
     textFont("Courier");
     textAlign(CENTER);
     text("GAME OVER", 300, 200);
-    textSize(20);
-    text("Click to try again", 300, 230);
+
+    //button
+    let button = createButton("Play Again");
+    button.position(270, 240);
+    button.size(100, 30);
+    button.mousePressed(resetSketch);
   } else if (screen == 4) {
     infoBox();
   }
 }
+function resetSketch() {}
 function mousePressed() {
   if (screen == 0) {
     if (mouseY > 360 && mouseY < 380 && mouseX > 558 && mouseX < 580) {
-      infoBox();
       screen = 4;
-    } else {
-      resetGame();
+    } else if (mouseY > 0 && mouseY < 310 && mouseX > 0 && mouseX < 600) {
       screen = 1;
-      backgroundY = 0;
-      birdY = 0;
+      resetGame.reset();
     }
   } else if (screen == 1) {
   } else if (screen == 2) {
     //you won
     if (mouseY < 230 && mouseY > 180 && mouseX > 190 && mouseX < 410) {
-      resetStart();
-      screen = 0;
+      screen = 1;
     }
   } else if (screen == 3) {
     //game over
     if (mouseY < 230 && mouseY > 180 && mouseX > 190 && mouseX < 410) {
-      resetStart();
-      screen = 0;
+      screen = 1;
     }
   } else if (screen == 4) {
     if (mouseY < 370 && mouseY > 355 && mouseX > 515 && mouseX < 560) {
-      resetStart();
       screen = 0;
     }
   }
