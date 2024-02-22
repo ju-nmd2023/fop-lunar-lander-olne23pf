@@ -2,26 +2,17 @@ function setup() {
   createCanvas(600, 400);
   angleMode(DEGREES);
   frameRate(30);
-  resetSketch();
 }
 let environmentY = 0;
-let screen = 2;
+let screen = 0;
 let velocity = 1;
 const gravity = 0.01;
-//let spacecraftY = 330;
-//let spacecraftX = 300;
-//let move = 10;
-//let angle = 0;
 let x = 300;
 let y = 280;
 let rotation = 0;
 
 let spacecraftX = x;
 let spacecraftY = y + 50;
-
-let asteroidsY = 0;
-let asteroidsX = 0;
-let asteroidsMinusX = 600;
 
 let moonY = -2000;
 
@@ -37,8 +28,6 @@ let spx3 = 30;
 let spx4 = 20;
 let spy = -50;
 let spy3 = -200;
-
-let gameIsRunning = true;
 
 function scenery() {
   //space
@@ -59,11 +48,11 @@ function environment(x, y) {
   noStroke();
   rect(0, 310, 600, -400);
   //IMG2-sky
-  fill(100, 190, 250);
+  fill(120, 200, 240);
   noStroke();
   rect(0, 0, 600, -400);
   //IMG3-sky
-  fill(90, 180, 250);
+  fill(100, 190, 250);
   noStroke();
   rect(0, -400, 600, -400);
 
@@ -513,17 +502,8 @@ function infoBox() {
 function resetGame() {
   //start game
   scenery();
-  environment(0, environmentY);
+  environment(0, environmentY, rotation);
   bird(0, birdY);
-
-  //asteroids(asteroidsMinusX + 100, asteroidsY);
-  //asteroids(asteroidsMinusX, asteroidsY);
-  //asteroids(asteroidsX + 100, asteroidsY);
-  //asteroids(asteroidsX, asteroidsY);
-  //asteroidsY = asteroidsY + 2;
-  //asteroidsX = asteroidsX + 1.4;
-  //asteroidsMinusX = asteroidsMinusX - 2;
-  birdY += 2;
   //move the spacecraft
   spacecraft(spacecraftX, spacecraftY, rotation);
   environmentY += velocity;
@@ -559,16 +539,7 @@ function resetGame() {
     spacecraftX += 6;
   }
 
-  //obstacles - asteroids
-  if (asteroidsX > 700) {
-    asteroidsX = 0;
-  }
-  if (asteroidsMinusX < -100) {
-    asteroidsMinusX = 600;
-  }
-  if (asteroidsY > 400) {
-    asteroidsY = 0;
-  }
+  birdY += 2;
   //obstacles - birds
   spx += flightSpeedX;
   spx2 += flightSpeedX2;
@@ -599,13 +570,38 @@ function resetGame() {
     environmentY -= velocity;
     velocity = -0.02;
   }
+  //collision
+  if (
+    environmentY > 2000 &&
+    80 < spacecraftX < 250 &&
+    spacecraftY < 129 &&
+    rotation > 170 &&
+    rotation < 190
+  ) {
+    screen = 2; //you win
+  } else if (
+    environmentY > 2000 &&
+    80 < spacecraftX < 250 &&
+    spacecraftY < 140 &&
+    rotation > 190 &&
+    rotation < 170
+  ) {
+    screen = 3; // game over
+  }
+  if (environmentY > 2000 && 250 < spacecraftX < 600 && spacecraftY < 80) {
+    screen = 3; // game over
+  }
 }
 function resetStart() {
   //start page
-  environment();
-  spacecraft();
+  environment(0, environmentY);
+  environmentY = 0;
+  spacecraft(spacecraftX, spacecraftY, rotation);
+  rotation = 0;
   spacecraftX = 300;
   spacecraftY = 330;
+  bird(0, birdY);
+  birdY = -300;
   push();
   fill(1);
   textFont("Courier");
@@ -633,79 +629,50 @@ function draw() {
   } else if (screen == 1) {
     //game screen
     resetGame();
-    if (
-      environmentY > 2000 &&
-      80 < spacecraftX < 250 &&
-      spacecraftY < 129 &&
-      rotation > 170 &&
-      rotation < 190
-    ) {
-      screen = 2; //you win
-    } else if (
-      environmentY > 2000 &&
-      80 < spacecraftX < 250 &&
-      spacecraftY < 140 &&
-      rotation > 190 &&
-      rotation < 170
-    ) {
-      screen = 3; // game over
-    }
-    if (environmentY > 2000 && 250 < spacecraftX < 600 && spacecraftY < 80) {
-      screen = 3; // game over
-    }
   } else if (screen == 2) {
     //you won
     fill(50);
     rect(0, 0, 600, 400);
     fill(255);
-    textSize(40);
+    textSize(30);
     textFont("Courier");
     textAlign(CENTER);
     text("YOU WON", 300, 200);
-
-    //button
-    let button = createButton("Play Again");
-    button.position(270, 240);
-    button.size(100, 30);
-    button.mousePressed(resetSketch);
+    textSize(20);
+    text("Click to play again", 300, 230);
   } else if (screen == 3) {
     //game over
     fill(50);
     rect(0, 0, 600, 400);
     fill(200, 0, 0);
-    textSize(40);
+    textSize(30);
     textFont("Courier");
     textAlign(CENTER);
     text("GAME OVER", 300, 200);
-
-    //button
-    let button = createButton("Play Again");
-    button.position(270, 240);
-    button.size(100, 30);
-    button.mousePressed(resetSketch);
+    textSize(20);
+    text("Click to try again", 300, 230);
   } else if (screen == 4) {
     infoBox();
   }
 }
-function resetSketch() {}
+
 function mousePressed() {
   if (screen == 0) {
     if (mouseY > 360 && mouseY < 380 && mouseX > 558 && mouseX < 580) {
       screen = 4;
     } else if (mouseY > 0 && mouseY < 310 && mouseX > 0 && mouseX < 600) {
       screen = 1;
-      resetGame.reset();
     }
   } else if (screen == 1) {
   } else if (screen == 2) {
     //you won
     if (mouseY < 230 && mouseY > 180 && mouseX > 190 && mouseX < 410) {
-      screen = 1;
+      screen = 0;
     }
   } else if (screen == 3) {
     //game over
     if (mouseY < 230 && mouseY > 180 && mouseX > 190 && mouseX < 410) {
-      screen = 1;
+      screen = 0;
     }
   } else if (screen == 4) {
     if (mouseY < 370 && mouseY > 355 && mouseX > 515 && mouseX < 560) {
