@@ -1,5 +1,5 @@
 let backgroundY = 0;
-let screen = 0;
+let screen = 2;
 let velocity = 1;
 const gravity = 0.01;
 //let spacecraftY = 330;
@@ -44,6 +44,7 @@ function setup() {
 }
 
 function scenery() {
+  //space
   fill(50, 50, 50);
   noStroke();
   rect(0, 0, 600, 400);
@@ -483,8 +484,53 @@ function asteroids(x, y) {
   pop();
 }
 
-function infoSymbol() {
+function infoBox() {
+  background(0, 0);
+  spacecraft();
+  spacecraftX = 100;
+  spacecraftY = 330;
   push();
+  fill(1);
+  textFont("Courier");
+  textAlign(CENTER);
+  textSize(30);
+  text("CONTROLS", 400, 100);
+  textSize(30);
+  text("←", 300, 160);
+  text("↑", 365, 160);
+  text("↓", 435, 160);
+  text("→", 495, 160);
+
+  textSize(12);
+  text("left", 300, 180);
+  text("velocity", 365, 180);
+  text("down", 435, 180);
+  text("right", 495, 180);
+  fill(255);
+  stroke(1);
+  rect(350, 200, 100, 20);
+  fill(1);
+  noStroke();
+  text("space-button", 400, 213);
+  text("rotate", 400, 233);
+
+  textSize(20);
+  stroke(1);
+  text("BACK", 540, 370);
+  pop();
+}
+function resetStart() {
+  background(0, 0);
+  spacecraft();
+  spacecraftX = 300;
+  spacecraftY = 330;
+  push();
+  fill(1);
+  textFont("Courier");
+  textAlign(CENTER);
+  textSize(30);
+  text("Click to Start!", 300, 180);
+  //info
   fill(255);
   stroke(1);
   ellipse(570, 370, 22, 22);
@@ -495,122 +541,116 @@ function infoSymbol() {
   text("i", 570, 375);
   pop();
 }
+function resetGame() {
+  scenery();
+  background(0, backgroundY);
+  //start game
+
+  bird(0, birdY);
+  //asteroids(asteroidsMinusX + 100, asteroidsY);
+  //asteroids(asteroidsMinusX, asteroidsY);
+  //asteroids(asteroidsX + 100, asteroidsY);
+  //asteroids(asteroidsX, asteroidsY);
+
+  birdY += 2;
+  //asteroidsY = asteroidsY + 2;
+  //asteroidsX = asteroidsX + 1.4;
+  //asteroidsMinusX = asteroidsMinusX - 2;
+
+  //move the spacecraft
+  spacecraft(spacecraftX, spacecraftY, rotation);
+  backgroundY += velocity;
+  velocity += gravity;
+  birdY += velocity;
+  if (keyIsDown(38)) {
+    spacecraftY -= 2;
+    velocity += 0.02;
+  } else if (keyIsDown(40)) {
+    velocity -= 0.02;
+    spacecraftY += 1;
+  } else {
+    spacecraftY += 0;
+  }
+
+  if (keyIsDown(37)) {
+    spacecraftX -= 6;
+  } else if (keyIsDown(39)) {
+    spacecraftX += 6;
+  } else {
+    spacecraftX += 0;
+  }
+
+  if (keyCode == 32 && keyIsPressed) {
+    rotation += 3;
+  }
+
+  //add walls on the sides of the canvas so the spacecraft cant move outside it
+  if (spacecraftX > 40) {
+    spacecraftX += -6;
+  }
+  if (spacecraftX < 560) {
+    spacecraftX += 6;
+  }
+
+  //obstacles - asteroids
+  if (asteroidsX > 700) {
+    asteroidsX = 0;
+  }
+  if (asteroidsMinusX < -100) {
+    asteroidsMinusX = 600;
+  }
+  if (asteroidsY > 400) {
+    asteroidsY = 0;
+  }
+  //obstacles - birds
+  spx += flightSpeedX;
+  spx2 += flightSpeedX2;
+  spx3 += flightSpeedX3;
+  spx4 += flightSpeedX4;
+  spy -= flightSpeedY;
+  if (spx < -100 || spx > 280) {
+    flightSpeedX *= 1;
+  }
+  if (spx2 < -100 || spx2 > 280) {
+    flightSpeedX2 *= -1;
+  }
+  if (spx3 < -100 || spx3 > 280) {
+    flightSpeedX3 *= -1;
+  }
+  if (spx4 < -100 || spx4 > 280) {
+    flightSpeedX4 *= -1;
+  }
+  if (spy < -150 || spy > 0) {
+    flightSpeedY *= -1;
+  }
+
+  //background stops moving when the moon appears and collisions
+  if (0 < backgroundY < 2000) {
+    backgroundY += velocity;
+  }
+  if (backgroundY > 2000) {
+    backgroundY -= velocity;
+    velocity = -0.02;
+  }
+  if (
+    backgroundY > 2000 &&
+    100 < spacecraftX < 250 &&
+    spacecraftY < 129 &&
+    rotation === 180
+  ) {
+    screen = 2;
+  }
+  if (backgroundY > 2000 && 250 < spacecraftX < 600 && spacecraftY < 80) {
+    screen = 3;
+  }
+}
 
 //got inspiration for the startpage and code structure from: https://editor.p5js.org/ehersh/sketches/BkCYHm7Rm
 function draw() {
-  scenery();
-  background(0, backgroundY);
-
   if (screen == 0) {
-    fill(1);
-    textFont("Courier");
-    textAlign(CENTER);
-    textSize(30);
-    text("Click to Start!", 300, 180);
-    spacecraft();
-    infoSymbol();
+    resetStart();
   } else if (screen == 1) {
-    //start game
-
-    bird(0, birdY);
-    //asteroids(asteroidsMinusX + 100, asteroidsY);
-    //asteroids(asteroidsMinusX, asteroidsY);
-    //asteroids(asteroidsX + 100, asteroidsY);
-    //asteroids(asteroidsX, asteroidsY);
-
-    birdY += 2;
-    //asteroidsY = asteroidsY + 2;
-    //asteroidsX = asteroidsX + 1.4;
-    //asteroidsMinusX = asteroidsMinusX - 2;
-
-    //move the spacecraft
-    spacecraft(spacecraftX, spacecraftY, rotation);
-    backgroundY += velocity;
-    velocity += gravity;
-    birdY += velocity;
-    if (keyIsDown(38)) {
-      spacecraftY -= 2;
-      velocity += 0.02;
-    } else if (keyIsDown(40)) {
-      velocity -= 0.02;
-      spacecraftY += 1;
-    } else {
-      spacecraftY += 0;
-    }
-
-    if (keyIsDown(37)) {
-      spacecraftX -= 6;
-    } else if (keyIsDown(39)) {
-      spacecraftX += 6;
-    } else {
-      spacecraftX += 0;
-    }
-
-    if (keyCode == 32 && keyIsPressed) {
-      rotation += 3;
-    }
-
-    //add walls on the sides of the canvas so the spacecraft cant move outside it
-    if (spacecraftX > 40) {
-      spacecraftX += -6;
-    }
-    if (spacecraftX < 560) {
-      spacecraftX += 6;
-    }
-
-    //obstacles - asteroids
-    if (asteroidsX > 700) {
-      asteroidsX = 0;
-    }
-    if (asteroidsMinusX < -100) {
-      asteroidsMinusX = 600;
-    }
-    if (asteroidsY > 400) {
-      asteroidsY = 0;
-    }
-    //obstacles - birds
-    spx += flightSpeedX;
-    spx2 += flightSpeedX2;
-    spx3 += flightSpeedX3;
-    spx4 += flightSpeedX4;
-    spy -= flightSpeedY;
-    if (spx < -100 || spx > 280) {
-      flightSpeedX *= 1;
-    }
-    if (spx2 < -100 || spx2 > 280) {
-      flightSpeedX2 *= -1;
-    }
-    if (spx3 < -100 || spx3 > 280) {
-      flightSpeedX3 *= -1;
-    }
-    if (spx4 < -100 || spx4 > 280) {
-      flightSpeedX4 *= -1;
-    }
-    if (spy < -150 || spy > 0) {
-      flightSpeedY *= -1;
-    }
-
-    //background stops moving when the moon appears and collisions
-
-    if (0 < backgroundY < 2000) {
-      backgroundY += velocity;
-    }
-    if (backgroundY > 2000) {
-      backgroundY -= velocity;
-      velocity = -0.02;
-    }
-    if (
-      backgroundY > 2000 &&
-      100 < spacecraftX < 250 &&
-      spacecraftY < 129 &&
-      rotation === 180
-    ) {
-      screen = 2;
-    }
-    if (backgroundY > 2000 && 250 < spacecraftX < 600 && spacecraftY < 80) {
-      screen = 3;
-      gameOver = true;
-    }
+    resetGame();
   } else if (screen == 2) {
     //you won
     fill(50);
@@ -634,61 +674,35 @@ function draw() {
     textSize(20);
     text("Click to try again", 300, 230);
   } else if (screen == 4) {
-    fill(1);
-    textFont("Courier");
-    textAlign(CENTER);
-    textSize(30);
-    text("CONTROLS", 400, 100);
-    textSize(30);
-    text("←", 300, 160);
-    text("↑", 365, 160);
-    text("↓", 435, 160);
-    text("→", 495, 160);
-
-    textSize(12);
-    text("left", 300, 180);
-    text("velocity", 365, 180);
-    text("down", 435, 180);
-    text("right", 495, 180);
-    fill(255);
-    stroke(1);
-    rect(350, 200, 100, 20);
-    fill(1);
-    noStroke();
-    text("space-button", 400, 213);
-    text("rotate", 400, 233);
-
-    textSize(20);
-    stroke(1);
-    text("BACK", 540, 370);
+    infoBox();
   }
-
-  //let y2 = backgroundY - spacecraftY + 280 + 50;
-
-  //print(y2);
-  print();
-  print();
 }
 function mousePressed() {
   if (screen == 0) {
-    gameOver = false;
     if (mouseY > 360 && mouseY < 380 && mouseX > 558 && mouseX < 580) {
+      infoBox();
       screen = 4;
     } else {
+      resetGame();
       screen = 1;
     }
   } else if (screen == 1) {
   } else if (screen == 2) {
     //you won
-    screen = 0;
+    if (mouseY < 230 && mouseY > 180 && mouseX > 190 && mouseX < 410) {
+      resetStart();
+      screen = 0;
+    }
   } else if (screen == 3) {
     //game over
-    screen = 0;
-    gameOver = false;
+    if (mouseY < 230 && mouseY > 180 && mouseX > 190 && mouseX < 410) {
+      resetStart();
+      screen = 0;
+    }
   } else if (screen == 4) {
     if (mouseY < 370 && mouseY > 355 && mouseX > 515 && mouseX < 560) {
+      resetStart();
       screen = 0;
-      spacecraftX = 300;
     }
   }
 }
