@@ -5,7 +5,7 @@ function setup() {
 }
 let environmentY = 0;
 let screen = 0;
-let velocity = 1;
+let velocity = 0;
 const gravity = 0.01;
 let x = 300;
 let y = 280;
@@ -499,6 +499,7 @@ function infoBox() {
   text("BACK", 540, 370);
   pop();
 }
+
 function resetGame() {
   //start game
   scenery();
@@ -506,14 +507,16 @@ function resetGame() {
   bird(0, birdY);
   //move the spacecraft
   spacecraft(spacecraftX, spacecraftY, rotation);
-  environmentY += velocity;
+  //environmentY += velocity;
   velocity += gravity;
   birdY += velocity;
   if (keyIsDown(38)) {
+    //UP
     spacecraftY -= 2;
-    velocity += 0.02;
+    velocity += 0.5;
   } else if (keyIsDown(40)) {
-    velocity -= 0.02;
+    //DOWN
+    velocity -= 0.5;
     spacecraftY += 1;
   } else {
     spacecraftY += 0;
@@ -527,7 +530,7 @@ function resetGame() {
     spacecraftX += 0;
   }
 
-  if (keyCode == 32 && keyIsPressed) {
+  if (keyIsDown(32) && keyIsPressed) {
     rotation += 3;
   }
 
@@ -563,32 +566,30 @@ function resetGame() {
   }
 
   //background stops moving when the moon appears
-  if (0 < environmentY < 2000) {
+  if (0 < environmentY < 2400) {
     environmentY += velocity;
   }
-  if (environmentY > 2000) {
+  if (environmentY > 2400) {
     environmentY -= velocity;
-    velocity = -0.02;
+    //velocity = -0.02;
   }
+  //console.log(spacecraftX);
+  console.log(spacecraftY);
+  console.log(environmentY);
+  //console.log(environmentY);
+
   //collision
   if (
-    environmentY > 2000 &&
-    80 < spacecraftX < 250 &&
-    spacecraftY < 129 &&
-    rotation > 170 &&
-    rotation < 190
+    2000 < environmentY < 2200 &&
+    220 < spacecraftY < 400 &&
+    70 < spacecraftX < 250 &&
+    velocity < -1
   ) {
     screen = 2; //you win
-  } else if (
-    environmentY > 2000 &&
-    80 < spacecraftX < 250 &&
-    spacecraftY < 140 &&
-    rotation > 190 &&
-    rotation < 170
-  ) {
+  } else if (80 < spacecraftX < 250 && spacecraftY < 140) {
     screen = 3; // game over
   }
-  if (environmentY > 2000 && 250 < spacecraftX < 600 && spacecraftY < 80) {
+  if (environmentY > 2500 && spacecraftY < 10) {
     screen = 3; // game over
   }
 }
@@ -629,6 +630,13 @@ function draw() {
   } else if (screen == 1) {
     //game screen
     resetGame();
+    // Display velocity counter
+    push();
+    fill(255);
+    textSize(20);
+    textAlign(RIGHT);
+    text("Velocity: " + velocity.toFixed(2), width - 10, 20);
+    pop();
   } else if (screen == 2) {
     //you won
     fill(50);
