@@ -1,20 +1,18 @@
-function setup() {
-  createCanvas(600, 400);
-  angleMode(DEGREES);
-  frameRate(30);
-}
 let environmentY = 0;
 let screen = 0;
-let velocity = 0;
-const gravity = 0.01;
+
+let velocityX = 0;
+let velocityY = 0;
+const gravity = 0.05;
+const thrust = -0.1;
+const maxLandingVelocity = 2;
+
 let x = 300;
 let y = 280;
 let rotation = 0;
 
 let spacecraftX = x;
 let spacecraftY = y + 50;
-
-let moonY = -2000;
 
 let birdY = -300;
 let flightSpeedX = 1;
@@ -29,12 +27,22 @@ let spx4 = 20;
 let spy = -50;
 let spy3 = -200;
 
+function setup() {
+  createCanvas(600, 400);
+  angleMode(DEGREES);
+  frameRate(30);
+}
+function preload() {
+  img = loadImage("img/lunarlander background.jpg");
+}
+
 function scenery() {
   //space
   fill(50, 50, 50);
   noStroke();
   rect(0, 0, 600, 400);
 }
+
 //moving background when game is running
 function environment(x, y) {
   push();
@@ -43,6 +51,7 @@ function environment(x, y) {
   fill(50, 130, 50);
   noStroke();
   rect(0, 310, 600, 90);
+  /*
   //sky
   fill(150, 210, 240);
   noStroke();
@@ -55,20 +64,18 @@ function environment(x, y) {
   fill(100, 190, 250);
   noStroke();
   rect(0, -400, 600, -400);
-
-  //moon
-  noStroke();
-  fill(150, 150, 150);
-  ellipse(130, moonY, 500, 240);
+  */
+  image(img, 0, -1990);
   pop();
 }
 
 function spacecraft(x, y, rotation) {
   push();
   noStroke();
-  translate(spacecraftX, spacecraftY, rotation);
+  translate(spacecraftX, spacecraftY);
   rotate(rotation);
   //base
+  noStroke();
   fill(170, 170, 170);
   beginShape();
   vertex(285 - 300, 260 - 270);
@@ -298,23 +305,26 @@ function spacecraft(x, y, rotation) {
   ellipse(319 - 300, 182.5 - 270, 2, 2);
   ellipse(290 - 300, 181 - 270, 2, 2);
   ellipse(281 - 300, 182.5 - 270, 2, 2);
-  pop();
 
+  pop();
+}
+
+function fire(x, y, rotation) {
   //fire
-  if (keyIsDown(38)) {
-    push();
-    fill(250, 90, 0);
-    stroke(255, 0, 0);
-    triangle(x - 15, y, x - 10, y + 20, x - 5, y);
-    triangle(x - 5, y, x, y + 30, x + 5, y);
-    triangle(x + 5, y, x + 10, y + 20, x + 15, y);
-    fill(255, 200, 0);
-    noStroke();
-    triangle(x - 13, y, x - 10, y + 10, x - 7, y);
-    triangle(x - 3, y, x, y + 20, x + 3, y);
-    triangle(x + 7, y, x + 10, y + 20, x + 13, y);
-    pop();
-  }
+  push();
+  translate(spacecraftX, spacecraftY);
+  rotate(rotation);
+  fill(250, 90, 0);
+  stroke(255, 0, 0);
+  triangle(-15, 0, -10, 20, -5, 0);
+  triangle(-5, 0, 0, 30, 5, 0);
+  triangle(5, 0, 10, 20, 15, 0);
+  fill(255, 200, 0);
+  noStroke();
+  triangle(-13, 0, -10, 10, -7, 0);
+  triangle(-3, 0, 0, 20, 3, 0);
+  triangle(7, 0, 10, 20, 13, 0);
+  pop();
 }
 //Got birds from https://editor.p5js.org/KatalinVarga/sketches/rT-XktCX-
 function bird(x, y) {
@@ -507,43 +517,44 @@ function resetGame() {
   bird(0, birdY);
   //move the spacecraft
   spacecraft(spacecraftX, spacecraftY, rotation);
-  //environmentY += velocity;
-  velocity += gravity;
-  birdY += velocity;
-  if (keyIsDown(38)) {
-    //UP
-    spacecraftY -= 2;
-    velocity += 0.5;
-  } else if (keyIsDown(40)) {
-    //DOWN
-    velocity -= 0.5;
-    spacecraftY += 1;
-  } else {
-    spacecraftY += 0;
+  //velocity += gravity;
+  //birdY += velocity;
+
+  if (velocityY < maxLandingVelocity) {
+    velocityY += gravity;
   }
 
+  //control spacecraft
   if (keyIsDown(37)) {
-    spacecraftX -= 6;
-  } else if (keyIsDown(39)) {
-    spacecraftX += 6;
-  } else {
-    spacecraftX += 0;
+    velocityX -= 0.1;
   }
+  if (keyIsDown(39)) {
+    velocityX += 0.1;
+  }
+  if (keyIsDown(38)) {
+    velocityY += thrust;
+  }
+  //move spacecraft based on velocity
+  spacecraftX += velocityX;
+  spacecraftY += velocityY;
 
+  //rotate spacecraft
   if (keyIsDown(32) && keyIsPressed) {
     rotation += 3;
   }
 
+  /*
   //add walls on the sides of the canvas so the spacecraft cant move outside it
   if (spacecraftX > 40) {
-    spacecraftX += -6;
+    spacecraftX -= 6;
   }
   if (spacecraftX < 560) {
     spacecraftX += 6;
-  }
+  }*/
 
-  birdY += 2;
   //obstacles - birds
+  birdY += 2;
+
   spx += flightSpeedX;
   spx2 += flightSpeedX2;
   spx3 += flightSpeedX3;
@@ -565,42 +576,52 @@ function resetGame() {
     flightSpeedY *= -1;
   }
 
-  //background stops moving when the moon appears
-  if (0 < environmentY < 2400) {
-    environmentY += velocity;
+  //background stops moving
+  if (environmentY >= 1990) {
+    environmentY += 0;
+  } else {
+    environmentY += 2;
   }
-  if (environmentY > 2400) {
-    environmentY -= velocity;
-    //velocity = -0.02;
-  }
-  //console.log(spacecraftX);
-  console.log(spacecraftY);
-  console.log(environmentY);
-  //console.log(environmentY);
 
-  //collision
+  /*
+  if (spacecraftY >= height - 60) {
+    // Assuming ground is at height - 60
+    if (velocityY <= maxLandingVelocity) {
+      velocityY = 0; // Stop the spacecraft if landing smoothly
+      velocityX = 0;
+      console.log("Landed successfully");
+    } else {
+      console.log("Crashed");
+    }
+  }*/
+
+  //---CHECKS FOR LANDING---
   if (
-    2000 < environmentY < 2200 &&
-    220 < spacecraftY < 400 &&
-    70 < spacecraftX < 250 &&
-    velocity < -1
+    spacecraftX > 170 &&
+    spacecraftX < 190 &&
+    spacecraftY > 110 &&
+    spacecraftY < 120 &&
+    rotation > 170 &&
+    rotation < 190
   ) {
-    screen = 2; //you win
-  } else if (80 < spacecraftX < 250 && spacecraftY < 140) {
-    screen = 3; // game over
+    if (velocityY < maxLandingVelocity) {
+      screen = 2; // you won
+    }
   }
-  if (environmentY > 2500 && spacecraftY < 10) {
+
+  if (environmentY > 1980 && spacecraftY < 230 && rotation < 90) {
     screen = 3; // game over
   }
 }
+
 function resetStart() {
   //start page
   environment(0, environmentY);
   environmentY = 0;
   spacecraft(spacecraftX, spacecraftY, rotation);
-  rotation = 0;
   spacecraftX = 300;
   spacecraftY = 330;
+  rotation = 0;
   bird(0, birdY);
   birdY = -300;
   push();
@@ -630,12 +651,17 @@ function draw() {
   } else if (screen == 1) {
     //game screen
     resetGame();
+    if (environmentY < 1200) {
+      fire(x, y, rotation);
+    } else if (environmentY > 1200 && keyIsDown(38)) {
+      fire(x, y, rotation);
+    }
     // Display velocity counter
     push();
     fill(255);
     textSize(20);
     textAlign(RIGHT);
-    text("Velocity: " + velocity.toFixed(2), width - 10, 20);
+    text("Velocity: " + velocityY.toFixed(2), width - 50, 20);
     pop();
   } else if (screen == 2) {
     //you won
