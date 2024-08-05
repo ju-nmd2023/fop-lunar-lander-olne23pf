@@ -1,11 +1,12 @@
 let environmentY = 0;
 let screen = 0;
 
-let velocityX = 0;
-let velocityY = 0;
-const gravity = 0.05;
-const thrust = -0.1;
+let speedX = 0;
+let speedY = 0;
+const gravity = 0.1;
+const velocity = -0.25;
 const maxLandingVelocity = 2;
+const minLandingVelocity = -1.5;
 
 let x = 300;
 let y = 280;
@@ -51,20 +52,7 @@ function environment(x, y) {
   fill(50, 130, 50);
   noStroke();
   rect(0, 310, 600, 90);
-  /*
-  //sky
-  fill(150, 210, 240);
-  noStroke();
-  rect(0, 310, 600, -400);
-  //IMG2-sky
-  fill(120, 200, 240);
-  noStroke();
-  rect(0, 0, 600, -400);
-  //IMG3-sky
-  fill(100, 190, 250);
-  noStroke();
-  rect(0, -400, 600, -400);
-  */
+
   image(img, 0, -1990);
   pop();
 }
@@ -450,109 +438,8 @@ function bird(x, y) {
     120 + spy3
   );
   pop();
-}
 
-function asteroids(x, y) {
-  push();
-  translate(x, y);
-  beginShape();
-  vertex(70, 50);
-  fill(100, 100, 100);
-  noStroke();
-  bezierVertex(70, 50, 90, 70, 70, 80);
-  bezierVertex(70, 80, 55, 85, 50, 80);
-  bezierVertex(50, 80, 30, 80, 30, 70);
-  bezierVertex(30, 70, 25, 50, 50, 50);
-  bezierVertex(50, 50, 60, 40, 70, 50);
-  endShape();
-  fill(120, 120, 120);
-  ellipse(65, 60, 8, 10);
-  ellipse(40, 70, 8, 5);
-  ellipse(50, 63, 6, 6);
-  ellipse(60, 75, 12, 6);
-  ellipse(39, 56, 7, 4);
-  pop();
-}
-
-function infoBox() {
-  environment(0, 0);
-  spacecraft();
-  spacecraftX = 100;
-  spacecraftY = 330;
-  push();
-  fill(1);
-  textFont("Courier");
-  textAlign(CENTER);
-  textSize(30);
-  text("CONTROLS", 400, 100);
-  textSize(30);
-  text("←", 300, 160);
-  text("↑", 365, 160);
-  text("↓", 435, 160);
-  text("→", 495, 160);
-
-  textSize(12);
-  text("left", 300, 180);
-  text("velocity", 365, 180);
-  text("down", 435, 180);
-  text("right", 495, 180);
-  fill(255);
-  stroke(1);
-  rect(350, 200, 100, 20);
-  fill(1);
-  noStroke();
-  text("space-button", 400, 213);
-  text("rotate", 400, 233);
-
-  textSize(20);
-  stroke(1);
-  text("BACK", 540, 370);
-  pop();
-}
-
-function resetGame() {
-  //start game
-  scenery();
-  environment(0, environmentY, rotation);
-  bird(0, birdY);
-  //move the spacecraft
-  spacecraft(spacecraftX, spacecraftY, rotation);
-  //velocity += gravity;
-  //birdY += velocity;
-
-  if (velocityY < maxLandingVelocity) {
-    velocityY += gravity;
-  }
-
-  //control spacecraft
-  if (keyIsDown(37)) {
-    velocityX -= 0.1;
-  }
-  if (keyIsDown(39)) {
-    velocityX += 0.1;
-  }
-  if (keyIsDown(38)) {
-    velocityY += thrust;
-  }
-  //move spacecraft based on velocity
-  spacecraftX += velocityX;
-  spacecraftY += velocityY;
-
-  //rotate spacecraft
-  if (keyIsDown(32) && keyIsPressed) {
-    rotation += 3;
-  }
-
-  /*
-  //add walls on the sides of the canvas so the spacecraft cant move outside it
-  if (spacecraftX > 40) {
-    spacecraftX -= 6;
-  }
-  if (spacecraftX < 560) {
-    spacecraftX += 6;
-  }*/
-
-  //obstacles - birds
+  //creates movement
   birdY += 2;
 
   spx += flightSpeedX;
@@ -575,6 +462,91 @@ function resetGame() {
   if (spy < -150 || spy > 0) {
     flightSpeedY *= -1;
   }
+}
+
+function infoBox() {
+  environment(0, 0);
+  spacecraft();
+  spacecraftX = 100;
+  spacecraftY = 330;
+  push();
+  fill(1);
+  textFont("Courier");
+  textAlign(CENTER);
+  textSize(30);
+  text("CONTROLS", 400, 100);
+  textSize(30);
+  text("←", 300, 160);
+  //text("↑", 365, 160);
+  text("↓", 400, 160);
+  text("→", 495, 160);
+
+  textSize(12);
+  text("left", 300, 180);
+  //text("velocity", 365, 180);
+  text("velocity", 400, 180);
+  text("right", 495, 180);
+  fill(255);
+  stroke(1);
+  rect(350, 200, 100, 20);
+  fill(1);
+  noStroke();
+  text("space-button", 400, 213);
+  text("rotate", 400, 233);
+
+  textSize(20);
+  stroke(1);
+  text("BACK", 540, 370);
+  pop();
+}
+
+function resetGame() {
+  //start game
+  scenery();
+  environment(0, environmentY, rotation);
+  bird(0, birdY);
+  spacecraft(spacecraftX, spacecraftY, rotation);
+  //adding gravity
+  speedY += gravity;
+
+  //control spacecraft
+  if (keyIsDown(37)) {
+    speedX -= 0.1;
+  }
+  if (keyIsDown(39)) {
+    speedX += 0.1;
+  }
+  if (keyIsDown(40)) {
+    //up
+    speedY += velocity;
+  }
+
+  //rotate spacecraft
+  if (keyIsDown(32) && keyIsPressed) {
+    rotation += 3;
+  }
+
+  //move spacecraft
+  spacecraftX += speedX;
+  spacecraftY += speedY;
+
+  //add walls on the sides of the canvas so the spacecraft cant move outside it
+  if (spacecraftX < 40) {
+    spacecraftX = 40;
+  }
+  if (spacecraftX > 560) {
+    spacecraftX = 560;
+  }
+  if (spacecraftY >= 400) {
+    spacecraftY = 400;
+  }
+
+  //fire
+  if (environmentY < 1200) {
+    fire(x, y, rotation);
+  } else if (environmentY > 1200 && keyIsDown(40)) {
+    fire(x, y, rotation);
+  }
 
   //background stops moving
   if (environmentY >= 1990) {
@@ -582,18 +554,6 @@ function resetGame() {
   } else {
     environmentY += 2;
   }
-
-  /*
-  if (spacecraftY >= height - 60) {
-    // Assuming ground is at height - 60
-    if (velocityY <= maxLandingVelocity) {
-      velocityY = 0; // Stop the spacecraft if landing smoothly
-      velocityX = 0;
-      console.log("Landed successfully");
-    } else {
-      console.log("Crashed");
-    }
-  }*/
 
   //---CHECKS FOR LANDING---
   if (
@@ -604,8 +564,10 @@ function resetGame() {
     rotation > 170 &&
     rotation < 190
   ) {
-    if (velocityY < maxLandingVelocity) {
+    if (speedY > minLandingVelocity && speedY < maxLandingVelocity) {
       screen = 2; // you won
+    } else {
+      screen = 3; // game over
     }
   }
 
@@ -651,17 +613,13 @@ function draw() {
   } else if (screen == 1) {
     //game screen
     resetGame();
-    if (environmentY < 1200) {
-      fire(x, y, rotation);
-    } else if (environmentY > 1200 && keyIsDown(38)) {
-      fire(x, y, rotation);
-    }
+
     // Display velocity counter
     push();
     fill(255);
     textSize(20);
     textAlign(RIGHT);
-    text("Velocity: " + velocityY.toFixed(2), width - 50, 20);
+    text("Velocity: " + speedY.toFixed(2), width - 50, 20); //tofixed(2) gives us only two decimals
     pop();
   } else if (screen == 2) {
     //you won
